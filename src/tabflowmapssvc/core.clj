@@ -75,11 +75,15 @@
     (send-edn-success {:image processed-data
                        :fname file-name})))
 
+(defn test-for-echo [request] ;; for debugging
+  (assoc (http/edn-response "echo!") :headers {"Content-Type" "text/html"}))
+
 (defn static-root [request] (ring-resp/content-type (ring-resp/resource-response "index.html" {:root "public"}) "text/html"))
 
 (def common-interceptors [(body-params/body-params) http/html-body])
 
 (def routes #{["/" :get (conj common-interceptors `static-root)]
+              ["/echo" :get (conj common-interceptors `test-for-echo)]
               ["/load-twb" :post (conj common-interceptors `load-twb)]})
 
 (def service {:env :prod
